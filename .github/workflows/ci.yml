@@ -5,6 +5,7 @@ on:
     branches:
       - main
 
+
 jobs:
   validate:
     uses: diegotony/gh-pipelines/.github/workflows/terraform-validate.yml@main
