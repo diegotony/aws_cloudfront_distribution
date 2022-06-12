@@ -1,13 +1,14 @@
-name: Terraform CI
+# name: Terraform CI
 
-on: 
-  pull_request:
-    branches:
-      - main
 
-jobs:
-  validate:
-    uses: diegotony/gh-pipelines/.github/workflows/terraform-validate.yml@main
-  docs:
-    needs: validate
-    uses: diegotony/gh-pipelines/.github/workflows/terraform-tfdocs.yml@main
+# on: 
+#   pull_request:
+#     branches:
+#       - main
+
+# jobs:
+#   validate:
+#     uses: diegotony/gh-pipelines/.github/workflows/terraform-validate.yml@main
+#   docs:
+#     needs: validate
+#     uses: diegotony/gh-pipelines/.github/workflows/terraform-tfdocs.yml@main
