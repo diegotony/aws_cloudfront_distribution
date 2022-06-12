@@ -10,5 +10,4 @@ jobs:
     uses: diegotony/gh-pipelines/.github/workflows/semantic-release.yml@main
     with:
       repositoryUrl: "https://github.com/diegotony/aws_cloudfront_distribution"
-    secrets:
       token: ${{ secrets.GH_TOKEN }}
