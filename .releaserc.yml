@@ -6,4 +6,3 @@ plugins:
     - message: "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
 branches:
   - "main"
-repositoryUrl: https://github.com/diegotony/aws_cloudfront_distribution
