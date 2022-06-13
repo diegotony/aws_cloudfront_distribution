@@ -7,7 +7,7 @@ data "aws_acm_certificate" "cert" {
 
 resource "aws_cloudfront_distribution" "my_cdn" {
   origin {
-    domain_name = "${aws_s3_bucket.blog.bucket_regional_domain_name}"
+    domain_name = "${aws_s3_bucket.my_bucket.bucket_regional_domain_name}"
     origin_id   = "${var.name}origin"
 
     s3_origin_config {
