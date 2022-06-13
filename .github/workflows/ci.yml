@@ -8,7 +8,7 @@ on:
 
 jobs:
   validate:
-    uses: diegotony/gh-pipelines/.github/workflows/terraform/validate.yml@main
+    uses: diegotony/gh-pipelines/.github/workflows/terraform-validate.yml@main
   # docs:
   #   needs: validate
   #   uses: diegotony/gh-pipelines/.github/workflows/terraform-tfdocs.yml@main
