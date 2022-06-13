@@ -2,7 +2,7 @@ resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
 }
 
 data "aws_acm_certificate" "cert" {
-  domain   = var.certificate_name
+  domain   = var.name
 }
 
 resource "aws_cloudfront_distribution" "my_cdn" {
