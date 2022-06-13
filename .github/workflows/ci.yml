@@ -13,4 +13,4 @@ jobs:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
   docs:
     needs: validate
-    uses: diegotony/gh-pipelines/.github/workflows/terraform-tfdocs.yml@main
+    uses: diegotony/gh-pipelines/.github/workflows/terraform-plugin-tfdocs.yml@main
