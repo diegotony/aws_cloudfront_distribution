@@ -11,6 +11,12 @@ jobs:
     uses: diegotony/gh-pipelines/.github/workflows/terraform-validate.yml@main
     secrets:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
-  terraform-plugin-tfdocs:
+
+  terraform-format:
     needs: terraform-validate
+    uses: diegotony/gh-pipelines/.github/workflows/terraform-format.yml@main
+
+  terraform-plugin-tfdocs:
+    needs: terraform-format
     uses: diegotony/gh-pipelines/.github/workflows/terraform-plugin-tfdocs.yml@main
+
