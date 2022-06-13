@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - main
-
-
+      
 jobs:
   release:
     uses: diegotony/gh-pipelines/.github/workflows/semantic-release.yml@main
