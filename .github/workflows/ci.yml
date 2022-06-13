@@ -8,7 +8,8 @@ on:
 jobs:
   terraform-validate:
     uses: diegotony/gh-pipelines/.github/workflows/terraform-validate.yml@main
-
+    secrets:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
   # docs:
   #   needs: validate
   #   uses: diegotony/gh-pipelines/.github/workflows/terraform-tfdocs.yml@main
