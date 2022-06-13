@@ -4,9 +4,6 @@ resource "aws_acm_certificate" "cert" {
   lifecycle {
     create_before_destroy = true
   }
-  tags {
-    Name = "${var.name}"
-  }
 }
 output "acm_dns_validation" {
   value = "${aws_acm_certificate.cert.domain_validation_options}"
