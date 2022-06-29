@@ -1,6 +1,5 @@
-# tf-module
-Template
-
+# aws_cloudfront_distribution
+Terraform Module to create Cloudfromation site
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 

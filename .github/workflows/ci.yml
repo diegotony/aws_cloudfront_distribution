@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+  pull_request:
+    branches:
+      - main
+
 jobs:
   terraform-validate:
     uses: diegotony/gh-pipelines/.github/workflows/terraform-validate.yml@main
