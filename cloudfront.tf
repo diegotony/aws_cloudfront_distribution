@@ -1,3 +1,8 @@
+locals {
+  tags        = { template = "tf-modules", service = "aws_cloudfront_distribution" }
+  custom_error_response = length(var.custom_error_response) == 0 ? null : var.custom_error_response
+}
+
 resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
 }
 
@@ -53,5 +58,9 @@ resource "aws_cloudfront_distribution" "my_cdn" {
     ssl_support_method = "sni-only" # Add Conditional
     minimum_protocol_version = "TLSv1.2_2021" # Add Conditional
   }
+
+  custom_error_response = local.custom_error_response
+
+  tags = merge(var.tags, local.tags)
 
 }
