@@ -1,5 +1,5 @@
 locals {
-  tags        = { template = "tf-modules", service = "aws_cloudfront_distribution" }
+  tags                  = { template = "tf-modules", service = "aws_cloudfront_distribution" }
   custom_error_response = length(var.custom_error_response) == 0 ? null : var.custom_error_response
 }
 
@@ -7,16 +7,17 @@ resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
 }
 
 data "aws_acm_certificate" "cert" {
-  domain   = var.name
+  count  = var.viewer_certificate.enabled ? 1 : 0
+  domain = var.viewer_certificate.name
 }
 
 resource "aws_cloudfront_distribution" "my_cdn" {
   origin {
-    domain_name = "${aws_s3_bucket.my_bucket.bucket_regional_domain_name}"
+    domain_name = aws_s3_bucket.my_bucket.bucket_regional_domain_name
     origin_id   = "${var.name}origin"
 
     s3_origin_config {
-      origin_access_identity = "${aws_cloudfront_origin_access_identity.origin_access_identity.cloudfront_access_identity_path}"
+      origin_access_identity = aws_cloudfront_origin_access_identity.origin_access_identity.cloudfront_access_identity_path
     }
   }
 
@@ -38,7 +39,7 @@ resource "aws_cloudfront_distribution" "my_cdn" {
         forward = "none"
       }
     }
-    compress = true
+    compress               = true
     viewer_protocol_policy = "allow-all"
     min_ttl                = 0
     default_ttl            = 3600
@@ -54,12 +55,21 @@ resource "aws_cloudfront_distribution" "my_cdn" {
   price_class = "PriceClass_200"
 
   viewer_certificate {
-    acm_certificate_arn = "${aws_acm_certificate.cert.arn}" # Add Conditional
-    ssl_support_method = "sni-only" # Add Conditional
-    minimum_protocol_version = "TLSv1.2_2021" # Add Conditional
+    cloudfront_default_certificate = var.viewer_certificate.enabled ? true : false
+    acm_certificate_arn            = var.viewer_certificate.enabled ? null : "${aws_acm_certificate.cert.arn}"
+    ssl_support_method             = var.viewer_certificate.enabled ? null : var.viewer_certificate.ssl_support_method
+    minimum_protocol_version       = var.viewer_certificate.enabled ? null : var.viewer_certificate.minimum_protocol_version
   }
 
-  custom_error_response = local.custom_error_response
+  dynamic "custom_error_response" {
+    for_each = var.custom_error_response
+    content {
+      error_caching_min_ttl = custom_error_response.value.error_caching_min_ttl
+      error_code            = custom_error_response.value.error_code
+      response_code         = custom_error_response.value.response_code
+      response_page_path    = custom_error_response.value.response_page_path
+    }
+  }
 
   tags = merge(var.tags, local.tags)
 
