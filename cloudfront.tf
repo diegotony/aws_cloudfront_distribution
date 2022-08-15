@@ -1,14 +1,15 @@
 locals {
   tags                  = { template = "tf-modules", service = "aws_cloudfront_distribution" }
   custom_error_response = length(var.custom_error_response) == 0 ? null : var.custom_error_response
+  aws_acm_certificate   = try(aws_acm_certificate.cert.arn, "nope")
 }
 
 resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
 }
 
 data "aws_acm_certificate" "cert" {
-  count  = var.viewer_certificate.enabled ? 1 : 0
-  domain = var.viewer_certificate.name
+  count  = var.certificate.enabled ? 1 : 0
+  domain = var.certificate.name
 }
 
 resource "aws_cloudfront_distribution" "my_cdn" {
@@ -25,7 +26,7 @@ resource "aws_cloudfront_distribution" "my_cdn" {
   is_ipv6_enabled     = true
   default_root_object = "index.html"
 
-  aliases = ["${var.name}"] # Add Conditional
+  aliases = var.certificate.enabled ? null : ["${var.name}"]
 
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD"]
@@ -55,10 +56,10 @@ resource "aws_cloudfront_distribution" "my_cdn" {
   price_class = "PriceClass_200"
 
   viewer_certificate {
-    cloudfront_default_certificate = var.viewer_certificate.enabled ? true : false
-    acm_certificate_arn            = var.viewer_certificate.enabled ? null : "${aws_acm_certificate.cert.arn}"
-    ssl_support_method             = var.viewer_certificate.enabled ? null : var.viewer_certificate.ssl_support_method
-    minimum_protocol_version       = var.viewer_certificate.enabled ? null : var.viewer_certificate.minimum_protocol_version
+    cloudfront_default_certificate = var.certificate.enabled ? true : null
+    acm_certificate_arn            = var.certificate.enabled ? null : "${local.aws_acm_certificate}"
+    ssl_support_method             = var.certificate.enabled ? null : var.certificate.ssl_support_method
+    minimum_protocol_version       = var.certificate.minimum_protocol_version
   }
 
   dynamic "custom_error_response" {

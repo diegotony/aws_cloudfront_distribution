@@ -3,7 +3,7 @@ variable "name" {
   description = "CDN name"
 }
 
-variable "viewer_certificate" {
+variable "certificate" {
     type = object({
         enabled = bool
         name = string
@@ -30,7 +30,7 @@ variable "custom_error_response" {
     error_caching_min_ttl = 1
     error_code = 404
     response_code = 200
-    response_page_path = "index.html"
+    response_page_path = "/index.html"
   } ]
 }
 
@@ -41,3 +41,6 @@ variable "tags" {
   }
   description = "tags"
 }
+
+# TODO
+# Add Validations
