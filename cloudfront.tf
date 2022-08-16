@@ -1,18 +1,13 @@
 locals {
   tags                  = { template = "tf-modules", service = "aws_cloudfront_distribution" }
   custom_error_response = length(var.custom_error_response) == 0 ? null : var.custom_error_response
-  aws_acm_certificate   = try(aws_acm_certificate.cert.arn, "nope")
 }
 
 resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
 }
 
-data "aws_acm_certificate" "cert" {
-  count  = var.certificate.enabled ? 1 : 0
-  domain = var.certificate.name
-}
-
 resource "aws_cloudfront_distribution" "my_cdn" {
+
   origin {
     domain_name = aws_s3_bucket.my_bucket.bucket_regional_domain_name
     origin_id   = "${var.name}origin"
@@ -25,8 +20,6 @@ resource "aws_cloudfront_distribution" "my_cdn" {
   enabled             = true
   is_ipv6_enabled     = true
   default_root_object = "index.html"
-
-  aliases = var.certificate.enabled ? null : ["${var.name}"]
 
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD"]
@@ -56,10 +49,7 @@ resource "aws_cloudfront_distribution" "my_cdn" {
   price_class = "PriceClass_200"
 
   viewer_certificate {
-    cloudfront_default_certificate = var.certificate.enabled ? true : null
-    acm_certificate_arn            = var.certificate.enabled ? null : "${local.aws_acm_certificate}"
-    ssl_support_method             = var.certificate.enabled ? null : var.certificate.ssl_support_method
-    minimum_protocol_version       = var.certificate.minimum_protocol_version
+    cloudfront_default_certificate = true
   }
 
   dynamic "custom_error_response" {
@@ -75,3 +65,7 @@ resource "aws_cloudfront_distribution" "my_cdn" {
   tags = merge(var.tags, local.tags)
 
 }
+
+# TODO
+# - Add More config but "important"
+# - Reduce variables 
