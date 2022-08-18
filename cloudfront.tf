@@ -1,17 +1,24 @@
+locals {
+  tags                  = { template = "tf-modules", service = "aws_cloudfront_distribution" }
+  custom_error_response = length(var.custom_error_response) == 0 ? null : var.custom_error_response
+  aws_acm_certificate   = try(aws_acm_certificate.cert.arn, "nope")
+}
+
 resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
 }
 
 data "aws_acm_certificate" "cert" {
-  domain   = var.name
+  count  = var.certificate.enabled ? 1 : 0
+  domain = var.certificate.name
 }
 
 resource "aws_cloudfront_distribution" "my_cdn" {
   origin {
-    domain_name = "${aws_s3_bucket.my_bucket.bucket_regional_domain_name}"
+    domain_name = aws_s3_bucket.my_bucket.bucket_regional_domain_name
     origin_id   = "${var.name}origin"
 
     s3_origin_config {
-      origin_access_identity = "${aws_cloudfront_origin_access_identity.origin_access_identity.cloudfront_access_identity_path}"
+      origin_access_identity = aws_cloudfront_origin_access_identity.origin_access_identity.cloudfront_access_identity_path
     }
   }
 
@@ -19,7 +26,7 @@ resource "aws_cloudfront_distribution" "my_cdn" {
   is_ipv6_enabled     = true
   default_root_object = "index.html"
 
-  aliases = ["${var.name}"] # Add Conditional
+  aliases = var.certificate.enabled ? null : ["${var.name}"]
 
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD"]
@@ -33,7 +40,7 @@ resource "aws_cloudfront_distribution" "my_cdn" {
         forward = "none"
       }
     }
-    compress = true
+    compress               = true
     viewer_protocol_policy = "allow-all"
     min_ttl                = 0
     default_ttl            = 3600
@@ -49,9 +56,22 @@ resource "aws_cloudfront_distribution" "my_cdn" {
   price_class = "PriceClass_200"
 
   viewer_certificate {
-    acm_certificate_arn = "${aws_acm_certificate.cert.arn}" # Add Conditional
-    ssl_support_method = "sni-only" # Add Conditional
-    minimum_protocol_version = "TLSv1.2_2021" # Add Conditional
+    cloudfront_default_certificate = var.certificate.enabled ? true : null
+    acm_certificate_arn            = var.certificate.enabled ? null : "${local.aws_acm_certificate}"
+    ssl_support_method             = var.certificate.enabled ? null : var.certificate.ssl_support_method
+    minimum_protocol_version       = var.certificate.minimum_protocol_version
   }
+
+  dynamic "custom_error_response" {
+    for_each = var.custom_error_response
+    content {
+      error_caching_min_ttl = custom_error_response.value.error_caching_min_ttl
+      error_code            = custom_error_response.value.error_code
+      response_code         = custom_error_response.value.response_code
+      response_page_path    = custom_error_response.value.response_page_path
+    }
+  }
+
+  tags = merge(var.tags, local.tags)
 
 }
