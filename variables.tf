@@ -1,22 +1,6 @@
 variable "name" {
   type        = string
-  description = "CDN name"
-}
-
-variable "certificate" {
-    type = object({
-        enabled = bool
-        name = string
-        ssl_support_method = string
-        minimum_protocol_version = string
-    })
-    description = "In case that you want a your have a certficate"
-    default = {
-      enabled = false
-      name = "nope"
-      ssl_support_method = "sni-only"
-      minimum_protocol_version = "TLSv1.2_2021"
-    }
+  description = "distribution name"
 }
 
 variable "custom_error_response" {

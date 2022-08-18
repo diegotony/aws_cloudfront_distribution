@@ -16,11 +16,11 @@ jobs:
     secrets:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
-  terraform-plugin-tfsec:
-    if: github.event_name == 'pull_request'
-    uses: diegotony/gh-pipelines/.github/workflows/terraform-plugin-tfsec.yml@main
-    secrets:
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  # terraform-plugin-tfsec:
+  #   if: github.event_name == 'pull_request'
+  #   uses: diegotony/gh-pipelines/.github/workflows/terraform-plugin-tfsec.yml@main
+  #   secrets:
+  #     GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
   terraform-plugin-tfdocs:
     if: github.event_name == 'pull_request'
